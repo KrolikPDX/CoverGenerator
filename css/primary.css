@@ -17,7 +17,7 @@ html, body {
     flex-direction: column;
     height: 100%;
   }
-  #template textarea {
+  #template-textarea {
     height: 100%; /* Ensure the textarea fills the parent */
     width: 100%;  /* Ensure full width */
     resize: none; /* Optional: Prevent resizing */

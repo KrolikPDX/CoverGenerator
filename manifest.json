@@ -4,6 +4,7 @@
     "version": "1.0",
     "manifest_version": 3,
     "options_page": "./pages/options.html",
+    "permissions": ["storage"],
     "action": {
       "default_popup": "./pages/primary.html",
       "default_icon": "./icons/default_icon.png"
