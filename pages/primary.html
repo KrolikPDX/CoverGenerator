@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/primary.css">
     <script defer src="/scripts/bootstrap.bundle.min.js"></script>
+    <script defer src="/scripts/html2pdf.bundle.min.js"></script>
     <script defer src="/scripts/primary.js"></script>
   </head>
   <body style="width: 350px; height:500px;">
@@ -41,7 +42,7 @@
   
         <!-- Template Tab -->
         <div class="tab-pane fade p-2" id="template" role="tabpanel" aria-labelledby="template-tab">
-          <textarea id="template-textarea" class="form-control" placeholder="Enter your template here"></textarea>
+          <div contenteditable="true" id="templateDiv"></div> <!-- Div where user enters template -->
         </div>
 
         <!-- Instructions -->

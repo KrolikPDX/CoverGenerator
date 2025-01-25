@@ -17,8 +17,15 @@ html, body {
     flex-direction: column;
     height: 100%;
   }
-  #template-textarea {
+  #templateDiv {
     height: 100%; /* Ensure the textarea fills the parent */
     width: 100%;  /* Ensure full width */
     resize: none; /* Optional: Prevent resizing */
+    border: 1px solid #ccc; 
+    padding: 10px; 
+    overflow: auto;
+  }
+  #templateDiv:empty::before {
+    content: 'Paste your formatted ';
+    color:gray;
   }
