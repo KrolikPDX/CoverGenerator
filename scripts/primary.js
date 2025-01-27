@@ -3,13 +3,10 @@ window.addEventListener("load", function () { //On window load, execute the foll
     var templateDiv = Query("#templateDiv")
     var formContainer = Query("#form-container"); //Insert forms into container
 
-    //On startup, setup generate and template tabs
+    //On startup, setup 'generate' and 'template' tabs
     chrome.storage.local.get(["template"], function(result) { 
-        //Set templateDiv 
         templateDiv.innerHTML = result.template;
-
-        //Move the following into separate function
-        insertInputBracketsInto(result.template, formContainer)
+        setupInputElementsFrom(result.template, formContainer)
     });
 
     //Event triggers when we type into templateDiv
@@ -17,40 +14,51 @@ window.addEventListener("load", function () { //On window load, execute the foll
         //As we type, save templateDiv value to storage
         chrome.storage.local.set({ template: event.target.innerHTML });
 
-        //Attempt to inject input elements into formContainer
-        insertInputBracketsInto(event.target.innerHTML, formContainer) 
+        //Inject input elements into formContainer if any are formed from template
+        setupInputElementsFrom(event.target.innerHTML, formContainer) 
     });
 
 
-    //Setup to generate pdf
-    var generateButton = Query("#generate-button")
-    generateButton.onclick = async function() {
-        //TODO: Need to go through all input elements, validate each one has a value first before generating PDF
-        template = templateDiv.innerHTML; //Get contents of template div, keep formatting
-
-        //Go through each input element under formContainer
+    //Generate button on click - attempt to generate PDF
+    Query("#generate-button").onclick = async function() {
         var allInputElements = Array.from(formContainer.querySelectorAll('input'))
-        var allInputValues = allInputElements.map(input => input.value);
-        var allPlaceholders = allInputElements.map(input => input.placeholder)
-        for (let i = 0; i < allInputValues.length; i++) {
-            const searchString = `\\[${allPlaceholders[i]}\\]`;
-            const regex = new RegExp(searchString, 'g'); // Create a global regex to match all occurrences
-            template = template.replace(regex, allInputValues[i]) //Replace template 
+
+        //Invalidate (enables error div) input elements that do not contain a value
+        allInputElements.forEach(input => {
+            if (!input.value.trim()) {
+                input.classList.add('is-invalid');
+            } else {
+                input.classList.remove('is-invalid');
+            }
+        });
+
+        //Generate PDF if all input elements are valid
+        const hasInvalidInputs = allInputElements.some((input) => input.classList.contains('is-invalid'));
+        if (!hasInvalidInputs) {
+            template = templateDiv.innerHTML; //Get contents of template div, keep formatting
+
+            //Go through each input element under formContainer
+            var allInputValues = allInputElements.map(input => input.value);
+            var allPlaceholders = allInputElements.map(input => input.placeholder)
+            for (let i = 0; i < allInputValues.length; i++) {
+                const searchString = `\\[${allPlaceholders[i]}\\]`;
+                const regex = new RegExp(searchString, 'g'); // Create a global regex to match all occurrences
+                template = template.replace(regex, allInputValues[i]) //Replace template 
+            }
+
+            //Use html2pdf to generate the PDF
+            const options = {
+                margin: 1,
+                //Add input element (with checkbox) for custom cover letter filename
+                filename: 'Cover_Letter.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+            html2pdf().set(options).from(template).save(); //Save PDF to downloads folder
         }
-
-        //Use html2pdf to generate the PDF
-        const options = {
-            margin: 1,
-            filename: 'Cover_Letter.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-
-        html2pdf().set(options).from(template).save(); //Save PDF to downloads folder
     }
 })
-
 
 /////////////////// Helpers //////////////////
 var Query = function(selector) { //Returns first found element
@@ -75,22 +83,34 @@ function getFromStorage(key) {
 }
 
 //Attempts to inject input elements from the given string into given container
-function insertInputBracketsInto(string, container) {
-    var matches = [...new Set(string.match(/\[([^\]]+)\]/g))]; //Returns unique values of items that match '[*]' regex
+function setupInputElementsFrom(string, container) {
+    var matches = getSquareBracketMatches(string); //Returns unique values of items that match '[*]' regex
     container.innerHTML = ''; //Clear all elements in the container just in case
 
     //If any items are found inside [] brackets, add input element to form container on generate tab
-    matches.forEach(field => {
-        //Create a new input element
-        const input = document.createElement('input');
+    matches.forEach((field, index) => {
+        //For errorDiv to work properly, they must all be separated
+        const divParent = document.createElement('div');
+        index == 0 ? divParent.className = '' : divParent.className = 'pt-3';
 
-        //Set attributes for the input
+        //Create input element 
+        const input = document.createElement('input');
         input.type = 'text';
-        input.className = 'form-control mb-3';
+        input.className = 'form-control';
         input.placeholder = field.replaceAll('[', '').replaceAll(']', '');;
 
-        //Add input element as a child to container
-        container.appendChild(input);
+        //Create new error div that will throw error if input element if not filled
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'invalid-feedback';
+        errorDiv.innerText = `${input.placeholder} is required.`;
+
+        //Add input and error element as a child to divParent, add divParent as a child of the form container
+        container.appendChild(divParent);
+        divParent.appendChild(input);
+        divParent.appendChild(errorDiv);
     });
 }
 
+function getSquareBracketMatches(string) {
+    return [...new Set(string.match(/\[([^\]]+)\]/g))];
+}

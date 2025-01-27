@@ -1,31 +1,37 @@
-html, body {
-    height: 100%;
-    margin: 0;
-  }
-  .container-fluid {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-  .tab-content {
-    flex-grow: 1;
-    display: flex;
-  }
-  .tab-pane {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  #templateDiv {
-    height: 100%; /* Ensure the textarea fills the parent */
-    width: 100%;  /* Ensure full width */
-    resize: none; /* Optional: Prevent resizing */
-    border: 1px solid #ccc; 
-    padding: 10px; 
-    overflow: auto;
-  }
-  #templateDiv:empty::before {
-    content: 'Paste your formatted ';
-    color:gray;
-  }
+body {
+  width: 400px; 
+  height:700px;
+  min-height: 100%;
+  margin: 0;
+}
+.container-fluid {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.tab-content {
+  flex-grow: 1;
+  display: flex;
+}
+.tab-pane {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+#templateDiv {
+  height: 100%; /* Ensure the textarea fills the parent */
+  width: 100%;  /* Ensure full width */
+  resize: none; /* Optional: Prevent resizing */
+  border: 1px solid #ccc; 
+  padding: 10px; 
+  overflow: auto;
+}
+#templateDiv:empty::before {
+  content: 'Paste your formatted ';
+  color:lightgray;
+}
+
+.invalid-feedback {
+  margin-top: 0;
+}
