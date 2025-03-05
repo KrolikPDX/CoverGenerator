@@ -1,6 +1,8 @@
 # Cover Letter Generator Chrome Extension
 
 This Chrome extension helps users generate personalized cover letters by filling in a template with user-provided details. Once the template is filled out, the extension will generate a downloadable PDF of the cover letter.
+- Published on the Chrome Web Store: [Link](https://chromewebstore.google.com/detail/cover-letter-generator/ljpaeicbgodhcebolfbjgpkeaaooflkc)
+- Example template: [Link](https://gist.githubusercontent.com/KrolikPDX/9235b05935b7510d06f82bb83816cde2/raw/9125839c3575b209255bf76e040a428152807a0a/template.txt)
 
 ## Features
 
